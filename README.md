@@ -3,7 +3,6 @@
 
 
 
-- 🔭 I’m currently working on **property app**
 
 - 🌱 I’m currently learning **flutter, dart**
 
