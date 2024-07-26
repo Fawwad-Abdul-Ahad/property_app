@@ -12,6 +12,6 @@ bool isInWishlist(String item) {
   return wishlist.contains(item);
 }
 
- getWishlist (){
+getWishlist (){
   return wishlist;
 }

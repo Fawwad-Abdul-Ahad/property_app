@@ -1,51 +1,40 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:property_app/views/login_screen.dart';
 import 'package:property_app/views/represent_screen.dart';
+import 'package:firebase_core/firebase_core.dart';
 
-class LoginScreen extends StatelessWidget {
-  const LoginScreen({super.key});
+class SignupScreen extends StatelessWidget {
+  const SignupScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
     TextEditingController emailController = TextEditingController();
     TextEditingController passController = TextEditingController();
 
-    signin() async {
+
+
+    registerLogin() async {
       try {
-        final credential =
-            await FirebaseAuth.instance.signInWithEmailAndPassword(
+        final credential = await FirebaseAuth.instance.createUserWithEmailAndPassword(
           email: emailController.text,
           password: passController.text,
         );
-        Navigator.pushAndRemoveUntil(
+        Navigator.push(
           context,
           MaterialPageRoute(builder: (context) => const RepresentScreen()),
-          (Route<dynamic> route) => false,
         );
       } on FirebaseAuthException catch (e) {
-        String errorMessage = '';
-        if (e.code == 'user-not-found') {
-          errorMessage = 'No user found for that email.';
-        } else if (e.code == 'wrong-password') {
-          errorMessage ='Wrong password provided for that user.';
+        if (e.code == 'weak-password') {
+          print('The password provided is too weak.');
+        } else if (e.code == 'email-already-in-use') {
+          print('The account already exists for that email.');
         }
-      showDialog(
-          context: context,
-          builder: (BuildContext context) {
-            return AlertDialog(
-              title: Text('Please enter coreect email or password'),
-              content: Text(errorMessage),
-              actions: [
-                TextButton(
-                  child: Text('OK'),
-                  onPressed: () {
-                    Navigator.of(context).pop();
-                  },
-                ),
-              ],
-            );
-          },
-        );
+        else{
+          print("Error");
+        }
+      } catch(e) {
+        print(e);
       }
     }
 
@@ -62,11 +51,11 @@ class LoginScreen extends StatelessWidget {
                   Icons.person,
                   size: 80,
                   color: const Color.fromARGB(255, 0, 39, 71),
-                ), // Add your image URL here
+                ),
               ),
               SizedBox(height: 20),
               Text(
-                "Login to your Account",
+                "Create account",
                 style: TextStyle(fontSize: 22, fontWeight: FontWeight.w700),
               ),
               SizedBox(height: 20),
@@ -75,7 +64,7 @@ class LoginScreen extends StatelessWidget {
                 child: TextField(
                   controller: emailController,
                   decoration: InputDecoration(
-                    labelText: 'Username',
+                    labelText: 'Email',
                     icon: Icon(Icons.person),
                   ),
                 ),
@@ -118,20 +107,29 @@ class LoginScreen extends StatelessWidget {
                     backgroundColor: MaterialStateProperty.all<Color>(
                         Color.fromARGB(255, 0, 112, 204)),
                   ),
-                  onPressed: () {
-                    signin(); 
+                  onPressed: () async {
+                    await registerLogin();
                   },
                   child: Text(
-                    'Login',
+                    'Signup',
                     style: TextStyle(color: Colors.white, fontSize: 16),
                   ),
                 ),
               ),
               SizedBox(height: 10),
-              Text(
-                "Forgot the password?",
-                style: TextStyle(
-                    fontSize: 14, color: Color.fromARGB(255, 0, 106, 194)),
+              InkWell(
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => const LoginScreen()),
+                  );
+                },
+                child: Text(
+                  "Already have an account",
+                  style: TextStyle(
+                      fontSize: 14, color: Color.fromARGB(255, 0, 106, 194)),
+                ),
               )
             ],
           ),
@@ -140,3 +138,4 @@ class LoginScreen extends StatelessWidget {
     );
   }
 }
+
